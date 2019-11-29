@@ -76,7 +76,7 @@ public class ExamResults {
     public void readCsv(File file) throws FileNotFoundException {
         try {
             // pro Zeile Name und Punkte einlesen
-            this.results = Files.readAllLines(file.toPath()).stream().map(e -> e.split(",")).map(e -> new Submission(e[0], e[1])).collect(Collectors.toList());
+            this.results = Files.readAllLines(file.toPath()).stream().map(e -> e.split(",")).map(e -> new Submission(e[0], e[1].replace("{", "").replace("}", "").split("|", 0))).collect(Collectors.toList());
         } catch (IOException ex) {
             Logger.getLogger(ExamResults.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -85,13 +85,20 @@ public class ExamResults {
     // Suche mit filter und findFirst und verwende ein Optional
     // Verwende nur fluent Programming Streams und Lambdas!
     public int[] getSubmission(String searchName) {
-
+        // Wie gemeint?
+        return results.stream().filter(r -> r.getName().equalsIgnoreCase(searchName)).findFirst().map(r -> r.getPoints()).orElse(null);
     }
 
+      
     // Finde Die Top n besten results. Verwende die Methode limit!
     // Verwende nur fluent Programming Streams und Lambdas!
     public List<String> getTopN(final int n) {
-
+        return results.stream().sorted(new Comparator<Submission>() {
+            @Override
+            public int compare(Submission o1, Submission o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        }).limit(n).map(r -> r.getName()).collect(Collectors.toList());                
     }
 
 }
