@@ -76,7 +76,9 @@ public class ExamResults {
     public void readCsv(File file) throws FileNotFoundException {
         try {
             // pro Zeile Name und Punkte einlesen
-            this.results = Files.readAllLines(file.toPath()).stream().map(e -> e.split(",")).map(e -> new Submission(e[0], e[1].replace("{", "").replace("}", "").split("|", 0))).collect(Collectors.toList());
+            this.results = Files.readAllLines(file.toPath())
+                    .stream().map(r -> r.split(",")).map(r -> new Submission(r[0], Arrays.stream(r[1].replaceAll("\\{", "").replaceAll("\\}", "").replaceAll("|", "").split("")).mapToInt(Integer::parseInt).toArray())).collect(Collectors.toList());
+                                       
         } catch (IOException ex) {
             Logger.getLogger(ExamResults.class.getName()).log(Level.SEVERE, null, ex);
         }
